@@ -1,0 +1,490 @@
+html{
+	background: #efeff4
+}
+.message-wrap{
+	width: 100%;
+	overflow: hidden;
+}
+.time-wrap{
+	text-align: center;
+	color: #9c9c9c;
+	font-size: 12px;
+	margin-top: 5px;
+}
+/*******他的消息*************/
+.his-message{
+	width: 100%;
+	background: #efeff4;
+	padding:10px 15px;
+}
+.his-message>div{
+	display: table-cell;
+	vertical-align: top;
+}
+.his-message .avatar{
+	width: 46px;
+}
+.his-message .avatar img{
+	display: block;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	background-position: center;
+  	background-repeat: no-repeat;
+  	background-size: cover;
+}
+.his-message .content-wrap{
+	padding: 3px 0 0 10px;
+	position: relative;
+}
+.his-message .content{
+	background: #ffffff;
+	border-radius: 10px;
+	padding: 10px;
+	position: relative;
+}
+/*.his-message .content:before{
+	content: "";
+	display: inline-block;
+	width: 0;
+    height: 0;
+    border: 1px solid #ffffff;
+    border-top: 10px solid #ffffff;
+    border-right: 10px solid #ffffff;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    left: -10px;
+    top: 3px;
+    transform: rotate(15deg);
+}*/
+.his-message .little-horn{
+	content: "";
+	display: inline-block;
+	width: 0;
+    height: 0;
+    border: 1px solid #ffffff;
+    border-top: 10px solid #ffffff;
+    border-right: 10px solid #ffffff;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    left: 0px;
+    top: 6px;
+    transform: rotate(15deg);
+}
+.his-message .content p{
+	color: #000000;
+}
+.his-message .content p span{
+	vertical-align: middle;
+}
+.his-message .content p img{
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+}
+.his-message .content p img.picMsg{
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+}
+/*********他的消息****************/
+.my-message{
+	background: #efeff4;
+	padding:10px 15px;
+	float: right;
+}
+.my-message>div{
+	display: table-cell;
+	vertical-align: top;
+}
+.my-message .avatar{
+	width: 46px;
+}
+.my-message .avatar img{
+	display: block;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	background-position: center;
+  	background-repeat: no-repeat;
+  	background-size: cover;
+}
+.my-message .content-wrap{
+	padding: 3px 10px 0 0;
+	position: relative;
+}
+.my-message .content{
+	background: #ff714b;
+	border-radius: 10px;
+	padding: 10px;
+	position: relative;
+	z-index: 10;
+}
+.my-message .content.content-goods{
+	background: #ffffff;
+	border: 1px solid #ff714b;
+}
+.my-message .content p{
+	color: #ffffff;
+}
+.my-message .content p span{
+	vertical-align: middle;
+}
+.my-message .content p img{
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+}
+/*.my-message .content:after{
+	content: "";
+	display: inline-block;
+	width: 0;
+    height: 0;
+    border: 1px solid #ff714b;
+    border-top: 10px solid #ff714b;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #ff714b;
+    position: absolute;
+    right: -10px;
+    top: 3px;
+    transform: rotate(-15deg);
+    z-index: 5;
+}*/
+.my-message .little-horn{
+	content: "";
+	display: inline-block;
+	width: 0;
+    height: 0;
+    border: 1px solid #ff714b;
+    border-top: 10px solid #ff714b;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #ff714b;
+    position: absolute;
+    right: 0px;
+    top: 6px;
+    transform: rotate(-15deg);
+    z-index: 5;
+}
+.my-message .content p img.picMsg{
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+}
+.my-message .content p img.picMsg.loadPic{
+	width: 24px;
+	height: 24px;
+	-webkit-animation: circle 1s infinite linear;
+}
+@-webkit-keyframes circle {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+.my-message .content .goods-consult{
+	display: block;
+}
+.my-message .content .goods-consult>div{
+	display: table-cell;
+	vertical-align: top;
+}
+.my-message .content .goods-consult>div:nth-of-type(1){
+	width: 50px;
+	height: 50px;
+}
+.my-message .content .goods-consult>div:nth-of-type(1) img{
+	display: block;
+	width: 50px;
+	height: 50px;
+	background-position: center;
+  	background-repeat: no-repeat;
+  	background-size: cover;
+}
+.my-message .content .goods-consult>div:nth-of-type(2){
+	width: 100%;
+	padding-left: 10px;
+}
+.my-message .content .goods-consult>div:nth-of-type(2) span:nth-of-type(1){
+	display: block;
+	height: 16px;
+	line-height: 16px;
+	color: #ff714b;
+	font-size: 12px;
+}
+.my-message .content .goods-consult>div:nth-of-type(2) span:nth-of-type(2){
+	display: block;
+	height: 34px;
+	line-height: 17px;
+	font-size: 14px;
+	color: #000000;
+	overflow: hidden;
+}
+/**********发送消息状态**********/
+.my-message .sending-wrap{
+	display: table-cell;
+	vertical-align: middle;
+}
+.my-message .sending-wrap .sending-icon{
+	width: 15px;
+	height: 15px;
+	margin-right: 10px;
+}
+.my-message .sending-wrap .sending-icon.sending-run {
+	background: url(../imgs/loading2.png) no-repeat center;
+	background-size: 100%;
+	-webkit-animation: circle 1s infinite linear;
+}
+.my-message .sending-wrap .sending-icon.sending-fail{
+	background: url(../imgs/warning.png) no-repeat center;
+	background-size: 100%;
+}
+/*********文本消息中的链接样式*********/
+a.my-link{
+	color: #ffffff;
+	text-decoration: underline;
+}
+a.his-link{
+	color: #266acf;
+	text-decoration: underline;
+}
+/***********商品链接*************/
+.goods-info-wrap{
+	margin: 10px 0;
+	padding: 10px 15px;
+	background: #ffffff;
+	border: 1px solid red;
+	border-width: 1px 0;
+	-webkit-border-image: url(../imgs/border.gif) 2 stretch;
+}
+.goods-info{}
+.goods-info>div{
+	display: table-cell;
+	vertical-align: top;
+}
+.goods-info>div:nth-of-type(1){
+	width: 60px;
+	height: 60px;
+}
+.goods-info>div:nth-of-type(1) img{
+	display: block;
+	width: 65px;
+	height: 65px;
+	background-position: center;
+  	background-repeat: no-repeat;
+  	background-size: cover;
+}
+.goods-info>div:nth-of-type(2){
+	width: 100%;
+	padding-left: 10px;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(1){
+	width: 100%;
+	height: 32px;
+	line-height: 16px;
+	color: #000000;
+	overflow: hidden;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(2){
+	width: 100%;
+	height: 28px;
+	line-height: 28px;
+	margin-top: 5px;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(2)>span{
+	display: inline-block;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(2)>span:nth-of-type(1){
+	color: #a5a4a4;
+	max-width: 100px;
+	white-space: nowrap;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(2)>span:nth-of-type(2){
+	float: right;
+}
+.goods-info>div:nth-of-type(2) p:nth-of-type(2)>span:nth-of-type(2) a{
+	display: inline-block;
+	border: 1px solid #ff714b;
+	border-radius: 5px;
+	width: 80px;
+	height: 28px;
+	line-height: 28px;
+	color: #ff714b;
+	text-align: center;
+}
+/***********底部输入栏************/
+.typer-wrap{
+	position: relative;
+	margin-top: 210px;
+}
+.typer{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 10;
+}
+.typer .tools{
+	width: 100%;
+	height: 50px;
+	background: #ffffff;
+	border: 1px solid red;
+	border-width: 1px 0 0 0;
+	-webkit-border-image: url(../imgs/border.gif) 2 stretch;
+}
+.typer .tools > div{
+	display: table-cell;
+	height: 50px;
+	line-height: 50px;
+	vertical-align: middle;
+	position: relative;
+}
+.typer .tools > div:nth-of-type(1){
+	padding-left: 10px;
+}
+.typer .tools > div:nth-of-type(2){
+	padding-right: 5px;
+}
+.typer .tools > div:nth-of-type(3){
+	width: 100%;
+}
+.typer .tools > div:nth-of-type(4){
+	padding: 0 10px;
+}
+.typer .tools .btn-add{
+	display: block;
+	width: 35px;
+	height: 25px;
+	background: url(../imgs/w_1.png) no-repeat center -175px;
+	background-size: 25px auto;
+}
+.typer .tools .btn-add.emo{
+	background-position: center -225px;
+}
+.typer .tools .btn-add.keyboard{
+	background-position: center -275px;
+}
+.typer .tools .btn-add.pic{
+	background-position: center -250px;
+}
+.typer .tools .text-input{
+	display: block;
+	width: 100%;
+	height: 30px;
+	border: 1px solid #d1d1d1;
+	border-radius: 5px;
+	font-size: 14px;
+    padding: 0px 5px 0px 5px;
+}
+.typer .tools .btn-send{
+	display: block;
+	width: 50px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+	color: #ffffff;
+	text-align: center;
+	background: #007aff;
+}
+
+.typer .tools .btn-send-disabled {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.typer .tools .input-file{
+	position: absolute;
+	display: inline-block;
+	width: 35px;
+	height: 26px;
+	left: 0;
+	top: 13px;
+	opacity: 0;
+	z-index: 11;
+	overflow: hidden;
+}
+.typer .list-emoji-wrap{
+	width: 100%;
+	position: relative;
+	display: block;
+	margin: auto;
+	height: auto;
+	background: #ebecee;
+	border: 1px solid #d8d8d8;
+	border-width: 1px 0 0 0;
+}
+.typer .list-emoji-wrap:not(.on){
+	display: none;
+}
+.typer .list-emoji-wrap ul li table{
+	width: 90%;
+	margin: 5px auto;
+}
+.typer .list-emoji-wrap ul li table td{
+	padding: 8px 0;
+}
+.typer .list-emoji-wrap ul li table img{
+	display: block;
+	width: 25px;
+	height: 25px;
+	margin: auto;
+}
+.typer .emoji-indicate{
+  	width: 100%;
+  	height: 20px;
+  	text-align: center;
+  	pointer-events: none;
+}
+.typer .emoji-indicate span{
+	display: inline-block;
+  	width: 6px;
+  	height: 6px;
+  	border-radius: 10px;
+  	margin: 0px 4px;
+  	border: 1px solid #949597;
+  	background: #949597;
+}
+.typer .emoji-indicate span.on{
+	background: #576471;
+  	border-color: #576471;
+}
+/**********************登录时的蒙层*****************/
+.mask{
+	position: relative;
+}
+.mask-loading{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	background: rgba(0,0,0,0.6);
+}
+.mask-loading .loading-block{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -70px;
+	margin-top: -70px;
+	width: 140px;
+	height: 140px;
+	border-radius: 10px;
+	background: rgba(0,0,0,0.9);
+}
+.mask-loading .loading-block .icon-loading{
+	width: 50px;
+	height: 50px;
+	margin: 20px auto;
+	background: url(../imgs/loading3.png) no-repeat center;
+	background-size: 100%;
+	-webkit-animation: circle 1s infinite linear;
+}
+.mask-loading .loading-block .text-loading{
+	color: #ffffff;
+	text-align: center;
+}
+

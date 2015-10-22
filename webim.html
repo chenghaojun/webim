@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <title>webim</title>
+    <meta charset="utf-8">
+    <meta content="" name="description" >
+    <meta content="" name="keywords" >
+    <meta content="chenghaojun" name="author">
+    <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+    <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+    <meta content="no-cache" http-equiv="pragma">
+    <meta content="0" http-equiv="expires">
+    <meta content="telephone=no, address=no" name="format-detection">
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <link href="css/common.css?v=20150423" rel="stylesheet">
+    <link href="css/consult.css?v=20150423" rel="stylesheet">
+    <link href="css/tipbox.css?v=20150423" rel="stylesheet">
+
+    <script src="js/jquery.min.js?t=20150910"></script>
+    <script src="js/strophe.js?t=20150910"></script>
+    <script src="js/template.js?t=20150910"></script>
+    <script src="js/emotion.js?t=20150910"></script>
+    <script src="js/swipe.js?t=20150910"></script>
+    <script src="js/image_upload.js?t=20150910"></script>
+    <script src="js/tipbox.js?t=20150910"></script>
+
+    <script id="to-good-message-tpl" type="text/html">
+        <div class="goods-info-wrap">
+            <div class="goods-info">
+                <div>
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII=" style="background-image:url({{image}});">
+                </div>
+                <div>
+                    <p>{{title}}</p>
+                    <p>
+                        <span>售价:<span>{{price}}</span></span>
+                        <span><a href="javascript:;" id="btn_send_link">发送商品</a></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="from-image-message-tpl" type="text/html">
+        <div id="{{message_id}}" class="message-wrap" data-message-id="{{message_id}}" data-uuid="{{uuid}}">
+            <div class="my-message">
+                <div class="sending-wrap">
+                    <div class="sending-icon"></div>
+                    <input type="hidden" data-id="pic-loading" value="">
+                </div>
+                <div class="content-wrap">
+                    <div class="content">
+                        <p>
+                            {{if thumbnailUrl}}
+                            <img data-picid="{{picId}}" class="picMsg" src="{{thumbnailUrl}}">
+                            {{else}}
+                            <img data-picid="{{picId}}" class="picMsg loadPic" src="{{url}}">
+                            {{/if}}
+                        </p>
+                    </div>
+                    <div class="little-horn">
+                    </div>
+                </div>
+                <div class="avatar">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII="
+                    style="background-image:url({{avatar}});">
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="to-text-message-tpl" type="text/html">
+        <div id="{{message_id}}" class="message-wrap" data-message-id="{{message_id}}" data-uuid="{{uuid}}">
+            <div class="his-message">
+                <div class="avatar"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII=" style="background-image:url({{avatar}});"> </div>
+                <div class="content-wrap">
+                    <div class="content">
+                        <p><span>{{content}}</span></p>
+                    </div>
+                    <div class="little-horn"></div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="from-text-message-tpl" type="text/html">
+        <div class="message-wrap">
+            <div id="{{message_id}}" class="my-message" data-message-id="{{message_id}}" data-uuid="{{uuid}}">
+                <div class="sending-wrap">
+                    <div class="sending-icon {{status}}"></div>
+                    <input type="hidden" data-id="WEBIM_27a8dc8032" value="">
+                </div>
+                <div class="content-wrap">
+                    <div class="content">
+                        <p><span>{{content}}</span></p>
+                    </div>
+                    <div class="little-horn"></div>
+                </div>
+                <div class="avatar">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII=" style="background-image:url(http://m.weimob.com/imgs/w_11.jpg);">
+                </div>
+            </div>
+        </div>
+    </script>
+
+</head>
+<body onselectstart="return true;" ondragstart="return false;" class="mobile">
+    <div data-role="container" class="body consult">
+        <div id="conversation">
+            <!-- 消息在此 -->
+        </div>
+    </div>
+
+    <div data-role="typer-wrap" class="typer-wrap">
+        <div data-role="typer" class="typer">
+            <div class="tools">
+                <div>
+                    <a href="javascript:;" class="btn-add emo" id="btn_emo_keyboard"></a>
+                </div>
+                <div>
+                    <input type="file" accept="image/jpg, image/jpeg, image/png" id="add_photo" class="input-file">
+                    <a href="javascript:;" class="btn-add pic"></a>
+                </div>
+                <div>
+                    <input class="text-input" id="text_input" value="" placeholder="发送不加密的消息">
+                </div>
+                <div>
+                    <a href="javascript:;" class="btn-send" id="btn_send_text">发送</a>
+                </div>
+            </div>
+            <!-- 表情控制器 -->
+            <div id="list_emoji_wrap" class="list-emoji-wrap on">
+                <ul id="list_emoji"></ul>
+                <div id="emoji_indicate" class="emoji-indicate"></div>
+            </div>
+        </div>
+    </div>
+
+    <div data-role="loading-mask" class="mask" id="mask" style="display: block;">
+        <div class="mask-loading">
+            <div class="loading-block">
+                <div class="icon-loading"></div>
+                <div class="text-loading">加载中</div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function() {
+            var Config = {
+                'version' : 'v-0.0.1', 
+                'author' : 'chenghaojun', 
+                'service_url' : 'http://114.215.178.172:7070/http-bind/', 
+                'image_upload_url' : 'http://weihuishang.net:8080/upload_base64_image.php?access_token=f263650d9f6df2261d43f19dfcf0254e', 
+                'default_avatar' : 'http://m.weimob.com/imgs/w_11.jpg' , 
+                'start_sentence_url': ''
+            }
+
+            // 商品数据，如果 refer 是商品的话就拿当前这个商品的数据过来。
+            var good = {
+                'title': '精品棉袜，买三送一',
+                'image': 'http://img.shopping.vd.cn/online/upload/20150625/20150625164538_135.jpg',
+                'price': '￥12.00',
+                'link': 'http://www.baidu.com/'
+            };
+
+            // 增加 emotion 表情控件
+            (function() {
+                var a = emotionPicData,
+                    b = "", 
+                    c = []
+                    d = 7, 
+                    e = 3, 
+                    k = d * e, 
+                    m = emotionDelIcon, 
+                    n = 1, 
+                    o = { delBtn: m };
+                for (var p in a) {
+                    n % k == 0 && c.push(o);
+                    var q = {};
+                    q[p] = a[p],
+                    c.push(q),
+                    n++
+                }
+                c.push(o);
+                for (var p = (Math.ceil(c.length / k), 0); p < c.length; p++) {
+                    p % k == 0 && (b += "<li><table>"),
+                    p % d == 0 && (b += "<tr>");
+                    var r = "";
+                    for (var s in c[p])
+                        r += s;
+                    b += '<td><img data-emoji="' + r + '" src=' + c[p][r] + "></td>",
+                    (p + 1) % d == 0 && (b += "</tr>"),
+                    ((p + 1) % k == 0 || p == c.length - 1) && (b += "</table></li>")
+                }
+                $("#list_emoji").html(b);
+                new Swipe($("#list_emoji_wrap")[0], {
+                    speed: 500,
+                    loop: !1,
+                    indicate: "#emoji_indicate"
+                });
+
+                $("#list_emoji_wrap").removeClass("on");
+            })();
+
+            var connectionStatus = null;
+
+            // 最后的活动时间
+            var lastMsgTime = 0; // (new Date).getTime();
+            // var time = 60000;
+
+            // 显示本地消息的页码和每个页面的消息条数
+            var curPage = 0, pageSize = 10; // 默认是 20
+            var isBind = !1;
+            var lock  = !1;
+            var historyMsg = null;
+            var historyLoaded = !1;
+            var lastBodyHeight = 0;
+            var lastConnectionRequestId = null;
+
+            var $message_wrapper = $('#conversation');
+            var $mask_msg = $('.mask-loading > .loading-block > .text-loading');
+
+            $mask_msg.html('正在连接商户...');
+
+            var fromJid = 'guest01@im.weihuishang.net/webim';
+            var fromJidDomain = Strophe.getDomainFromJid(fromJid);
+            var fromJidPasswd = '123456';
+            var fromAvatar = 'http://m.weimob.com/imgs/w_11.jpg';
+
+            // 消息发送给谁，
+            // web 端资源名 /webim, 
+            // android 端资源名：/android,
+            // iOS 端资源名：/ios,
+            // 接收消息的时候可以自由决定是否对来路进行判断。比方说资源是安卓可以标识是来自安卓客户端的消息。
+            // var toJid = "weihuishang@im.weihuishang.net/webim"; 
+            var toJid = "weihuishang@im.weihuishang.net/mobile";
+            var toAvatar = "http://img.shopping.vd.cn/online/upload/20150625/20150625155114_115.jpg";
+
+            var url = Config['service_url'];
+
+            document.title = '跟 \'' + Strophe.getNodeFromJid(toJid) + '\'' + '聊天中，power by webim.';
+
+            var connection = new Strophe.Connection(url);
+            function rawInput(data) { console.log('RECV: ' + data); }
+            function rawOutput(data) { console.log('SENT: ' + data); }
+            connection.rawInput = rawInput;
+            connection.rawOutput = rawOutput;
+            connection.xmlOutput = function (e) {
+                if (connectionStatus == Strophe.Status.CONNECTED) {
+                    rid = $(e).attr('rid');
+                    sid = $(e).attr('sid');
+                    console.log(' XMLOUTPUT INFO - OUTGOING RID=' + rid + ' [SID=' + sid + ']');
+                    // log(' XMLOUTPUT INFO - OUTGOING XML = \n'+e.outerHTML);
+                    // TODO: set some variables to keep track of our rid and sid
+                } else {
+                    // todo: 
+                }
+            }
+
+            function onConnect(status) {
+                connectionStatus = status;
+                if (status == Strophe.Status.CONNECTING) {
+                    console.log('Strophe is connecting.');
+                } else if (status == Strophe.Status.CONNFAIL) {
+                    console.log('Strophe failed to connect.');
+                    // 连接失败
+                    new TipBox({
+                        type:'confirm',
+                        str:'连接服务器失败，请点击确认重试。',
+                        confirm_sure: {
+                            txt: '确认', 
+                            callback: function(tipbox) {
+                                window.location.reload();
+                                tipbox.close();
+                            }
+                        },
+                        confirm_cancel: {
+                            txt: '取消',
+                            callback: function(tipbox) {
+                                tipbox.close();
+                            }
+                        }
+                    });
+                } else if (status == Strophe.Status.DISCONNECTING) {
+                    console.log('Strophe is disconnecting.');
+                    // 久未活动，正在切断连接
+                } else if (status == Strophe.Status.DISCONNECTED) {
+                    console.log('Strophe is disconnected.');
+
+                    // 连接已切断
+                    new TipBox({
+                        type:'confirm',
+                        str:'由于您长时间未回话网络连接已中断，请点击「确认」按钮重新开启会话',
+                        confirm_sure: {
+                            txt: '确认', 
+                            callback: function(tipbox) {
+                                window.location.reload();
+                                tipbox.close();
+                            }
+                        },
+                        confirm_cancel: {
+                            txt: '取消',
+                            callback: function(tipbox) {
+                                tipbox.close();
+                            }
+                        }
+                    });
+                } else if (status == Strophe.Status.CONNECTED) {
+                    console.log('Strophe is connected.');
+                    $mask_msg.html('连接成功！');
+
+                    // 增加出席状态回调
+                    connection.addHandler(onHandlePresence, null, 'presence');
+
+                    // 增加消息回调
+                    connection.addHandler(onHandleMessage, null, 'message', 'chat');
+
+                    // 增加 ping pong 回调
+                    connection.addHandler(onHandlePing, null, 'iq', null, 'ping1');
+
+                    readMessage(fromJid, toJid);
+                    $(window).scrollTop($("body").height());
+                    bindSc();
+
+                    setTimeout(function(){
+                        $('.mask').hide();
+
+                        sendPing(fromJidDomain);
+                        sendPresence();
+                    }, 1000);
+                    // connection.disconnect();
+                }
+            }
+
+            function sendPing(to) {
+                var ping = $iq({
+                    'to': to,
+                    'type': 'get',
+                    'id': 'ping1'
+                }).c('ping', {'xmlns': 'urn:xmpp:ping'});
+                connection.send(ping);
+            }
+
+            function onHandlePing(iq) {
+                var pong = $iq({
+                    'to': $(iq).attr('from'),
+                    'type': 'result',
+                    'id': $(iq).attr('id')
+                });
+                connection.send(pong);
+                return true;
+            }
+
+            function sendPresence() {
+                connection.send($pres());
+            }
+
+            function onHandlePresence(presence) {
+                var presenceType = $(presence).attr('type');
+                var from = $(presence).attr('from')
+
+                if (presenceType !== 'error') {
+                    if (presenceType === 'unavailable') {
+                        console.error('错误的在线状态');
+                    } else {
+                        // 状态发布成功，应该点亮发送按钮设置好在线状态。
+                    }
+                } else {
+                    console.error('错误的在线状态');
+                }
+            }
+
+            // 发送消息
+            function sendMessage(from, to, message, type, messageId) {
+                // 如果发送的消息有一定的时间间隔了就记录一下时间戳。
+                var d = (new Date).getTime(), 
+                    e = d - lastMsgTime;
+                e > 60000 && appendTime(from, to, d), lastMsgTime = d;
+
+                // 发送远程消息，区分了图片消息和文本消息
+                if (type === 'text') {
+                    connection.send($msg({
+                        'from': from, 
+                        'to': to, 
+                        'type': 'chat' 
+                    }).c('body').t(message));
+
+                    var msgObj = buildMessageObj(from, to, 'text', messageId, 'success', message);
+                    saveMessage(from, to, msgObj);
+
+                    appendMsg(from, to, message, 'text', messageId, false, 'success');
+                } else if (type === 'image') {
+                    connection.send($msg({
+                        'from': from, 
+                        'to': to, 
+                        'type': 'chat' 
+                    }).c('body').t(message));
+
+                    var msgObj = buildMessageObj(from, to, 'image', messageId, 'success', {
+                            'url': message, 
+                            'thumbnailUrl': message, 
+                            'picId': d,
+                        });
+                    saveMessage(from, to, msgObj);
+
+                    appendMsg(from, to, {
+                            'url': message, 
+                            'thumbnailUrl': message, 
+                            'picId': d,
+                        }, 'image', messageId, false, 'success');
+                }
+            }
+
+            // 目前只能接收文本消息
+            function onHandleMessage(message) {
+                var jid = $(message).attr('from');
+                if (jid === toJid || jid.indexOf(toJid) !== -1) {
+                    console.log('reciver message.');
+                } else {
+                    // TODO: 接收到了其他人的消息，如果是服务器发送的全局消息通知做弹出处理
+                    return;
+                }
+
+                var message_id = guid();
+                var body = $(message).find('html > body');
+                if (body.length === 0) {
+                    body = $(message).find('body');
+                    if (body.length > 0) {
+                        body = body.text();
+                    } else {
+                        body = null;
+                    }
+                } else {
+                    body = body.contents();
+                }
+                var message_body = body;
+
+                var msgObj = buildMessageObj(jid, fromJid, 'text', message_id, 'sending', message_body);
+
+                // 增加时间戳
+                var d = (new Date).getTime(), e = d - lastMsgTime;
+                e >= 60000 && appendTime(fromJid, jid, d), lastMsgTime = d;
+
+                appendMsg(jid, fromJid, message_body, 'text', message_id);
+                saveMessage(fromJid, jid, msgObj);
+
+                return true;
+            }
+
+            connection.connect(fromJid, fromJidPasswd, onConnect);
+
+            // 绑定滚动事件，动态加载消息本地消息列表
+            function bindSc() {
+                $(window).on("scroll.ch", function() {
+                    $(this).scrollTop() <= 0 && !lock && readMessage(fromJid, toJid);
+                });
+                isBind = !0;
+            }
+
+            function guid() {
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                      .toString(16)
+                      .substring(1);
+                }
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+            }
+
+            function parseTextMessageFn(a) {
+                    if ("string" != typeof a) {
+                        // 消息格式错误
+                        return '';
+                    }
+                    var b = a
+                      , c = []
+                      , d = /\[[^[\]]{2,3}\]/gm
+                      , e = b.match(d);
+
+                    if (!e || e.length < 1) { // 可以确定是文本消息
+                        return {
+                            isemotion: !1,
+                            body: [{
+                                type: "txt",
+                                data: a
+                            }]
+                        };
+                    }
+                    for (var f = !1, g = 0; g < e.length; g++) {
+                        var h = b.substring(0, b.indexOf(e[g]));
+                        h && c.push({
+                            type: "txt",
+                            data: h
+                        });
+                        var i = emotionPicData[e[g]];
+                        i ? (f = !0,
+                        c.push({
+                            type: "emotion",
+                            data: i
+                        })) : c.push({
+                            type: "txt",
+                            data: e[g]
+                        });
+                        var j = b.indexOf(e[g]) + e[g].length;
+                        b = b.substring(j)
+                    }
+                    return b && c.push({
+                        type: "txt",
+                        data: b
+                    }),
+                    f ? {
+                        isemotion: f,
+                        body: c
+                    } : {
+                        isemotion: !1,
+                        body: [{
+                            type: "txt",
+                            data: a
+                        }]
+                    }
+            }
+
+            // 获取商户欢迎词
+            function showStartSentence() {
+                var msgObj = buildMessageObj(toJid, fromJid, 'text', guid(), 'success', '你好，请直接下单购买，付款后商家会自动发货，请耐心等待！');
+                appendMsg(toJid, fromJid, msgObj['message'], msgObj['type'], guid());
+                saveMessage(fromJid, toJid, msgObj);
+            }
+
+            // 构建一个消息对象
+            function buildMessageObj(from, to, type, id, status, message) {
+                if (type == 'text' || type == 'image' || type == 'time') {
+                    return {
+                        'from': from,
+                        'to': to,
+                        'type': type,
+                        'id': id,
+                        'status': status,
+                        'message': message
+                    }
+                } else if (type == 'good') {
+                    return {
+                        'from': from,
+                        'to': to,
+                        'type': 'good',
+                        'id': id,
+                        'status': status,
+                        'title': message['title'],
+                        'image': message['image'],
+                        'price': message['price'],
+                        'link': message['link']
+                    }
+                }
+            }
+
+            // 消息中增加时间戳，因为消息上是不带时间的所以隔一段时间就要增加时间戳
+            function appendTime(from, to, a) {
+                var c = new Date(a)
+                  , d = ("" + c.getFullYear(),
+                "" + (c.getMonth() + 1),
+                "" + c.getDate(),
+                "" + c.getHours())
+                  , e = "" + c.getMinutes();
+                d = 1 == d.length ? "0" + d : d,
+                e = 1 == e.length ? "0" + e : e;
+                var f = d + ":" + e
+                  , h = '<div class="time-wrap"><label>' + f + "</label></div>";
+                $message_wrapper.append(h);
+
+                var i = buildMessageObj(from, to, 'time', (new Date).getTime(), 'success', a);
+                saveMessage(from, to, i);
+            }
+
+            /**
+             * 增加消息到视图区域内
+             * @param  {[type]} from    发送者
+             * @param  {[type]} to      接受者
+             * @param  {[type]} message 消息对象，不同的消息类型，消息对象是不一样的。
+             * @param  {[type]} type    消息类型：(text, time)
+             * @param  {[type]} id      消息 id
+             * @param  {[type]} f       [receivedMsg | pic-loading]
+             * @param  {[type]} h       消息状态 status
+             * @return {[type]}         
+             */
+            function appendMsg(from, to, message, type, id, f, h) {
+                var html = null;
+                if (m = f ? ("success" == h ? "" : "sending-fail") : "sending-run", "text" == type) {
+                    ("string" == typeof message) ? (i = parseTextMessageFn(message), i = i.body) : i = message;
+                    for (var 
+                        o = "((http|ftp|https)://)(([a-zA-Z0-9\\._-]+\\.[a-zA-Z]{2,6})|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}))(:[0-9]{1,4})?(/[a-zA-Z0-9\\&%_\\./-~-]*)?", 
+                        p = new RegExp(o, "g"), 
+                        q = "", 
+                        r = 0; r < i.length; r++) {
+                        var s = i[r].type, 
+                            t = i[r].data;
+                        if ("txt" == s) {
+                            var u = t.replace(p, function(b, c) {
+                                var d = "";
+                                d = (from == fromJid) ? "my-link" : "his-link";
+                                var e = '<a href="' + b + '" class="' + d + '">' + b + "</a>";
+                                return e;
+                            });
+                            q += u
+                        } else {
+                            "emotion" == s && (q += '<img src="' + t + '">')
+                        }
+                    }
+                    template.config('escape', false);
+                    var tpl = (from == fromJid)? 'from-text-message-tpl': 'to-text-message-tpl';
+                    var avatar = (from == fromJid)? fromAvatar: toAvatar;
+                    html = template(tpl, {
+                        'message_id': id, 
+                        'uuid': guid(), 
+                        'content': q, 
+                        'avatar': avatar, 
+                        'status': m
+                    });
+                } else if ("image" == type) {
+                    var tpl = (from == fromJid)? 'from-image-message-tpl': 'to-image-message-tpl';
+                    var avatar = (from == fromJid)? fromAvatar: toAvatar;
+
+                    html = template(tpl, {
+                        'message_id': id, 
+                        'uuid': guid(), 
+                        'url': message['url'],
+                        'thumbnailUrl': message['thumbnailUrl'],
+                        'picId': message['picId'], 
+                        'avatar': avatar
+                    });
+                } else if ('good' == type) {
+                    html = template('to-good-message-tpl', {
+                        'message_id': id, 
+                        'uuid': guid(), 
+                        'avatar': toAvatar, 
+                        'title': message['title'],
+                        'image': message['image'],
+                        'price': message['price'],
+                        'link': message['link']
+                    });
+                } else if ('time' == type) {
+                    var x = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+                      , y = ""
+                      , z = new Date(message)
+                      , A = z.getFullYear()
+                      , B = z.getMonth() + 1
+                      , C = z.getDate()
+                      , D = z.getDay()
+                      , E = "" + z.getHours()
+                      , F = "" + z.getMinutes();
+                    E = 1 == E.length ? "0" + E : E,
+                    F = 1 == F.length ? "0" + F : F;
+                    var G = new Date
+                      , H = G.getFullYear()
+                      , I = G.getMonth() + 1
+                      , J = G.getDate()
+                      , K = (G.getDay(),
+                    "" + G.getHours())
+                      , L = "" + G.getMinutes();
+                    K = 1 == K.length ? "0" + K : K,
+                    L = 1 == L.length ? "0" + L : L;
+                    var M = new Date;
+                    M.setFullYear(H),
+                    M.setMonth(I - 1),
+                    M.setDate(J),
+                    M.setHours(0),
+                    M.setMinutes(0),
+                    M.setSeconds(0),
+                    M.setMilliseconds(0);
+                    var N = new Date(M - 864e5)
+                      , O = new Date(M - 5184e5);
+                    z >= M ? y = E + ":" + F : M > z && z >= N ? y = "昨天 " + E + ":" + F : N > z && z >= O ? y = x[D] + " " + E + ":" + F : O > z && (y = A + "-" + B + "-" + C + " " + E + ":" + F),
+                    html = '<div class="time-wrap"><label>' + y + "</label></div>"
+                }
+                if (html) {
+                    if (f) {
+                        return html;
+                    }
+                    $message_wrapper.append(html);
+                }
+                $(window).scrollTop($("body").height());
+            }
+
+
+            // 将消息存储在本地， 最多存储 250 条本地消息。
+            // {from: {to: [{id: , from: , to: , message: , saveTime: , status: , type: ,}, {}, {}, ...]}}
+            function saveMessage(from, to, messageObj) {
+                if (window.localStorage) {
+                    messageObj.saveTime = (new Date).getTime();
+                    var b = localStorage[from] ? JSON.parse(localStorage[from]) : null ;
+                    if (b) {
+                        var c = b[to];
+                        c ? (c.length > 250 && c.shift(), c.push(messageObj)) : (c = [], c.push(messageObj)), b[to] = c
+                    } else {
+                        b = {};
+                        var c = [];
+                        c.push(messageObj),
+                        b[to] = c
+                    }
+                    localStorage[from] = JSON.stringify(b)
+                } else {
+                    console.error('无法存储消息。');
+                }
+            }
+
+            // 从本地读取消息
+            function readMessage(from, to) {
+                if (lock = !0, window.localStorage) {
+                    if (!historyLoaded) {
+                        var b = from;
+                        if (historyMsg = localStorage[b] ? JSON.parse(localStorage[b]) : null ,
+                        historyLoaded = !0,
+                        historyMsg && historyMsg[to]) {
+                            historyMsg[to].reverse();
+                            var c = historyMsg[to][0]
+                              , d = (new Date).getTime();
+                            (d - c.saveTime > 43200000 || "undefined" == typeof c.saveTime) && showStartSentence()
+                        } else
+                            $(window).off("scroll.ch"), showStartSentence()
+                    }
+                    if (historyMsg && historyMsg[to]) {
+                        for (var e = historyMsg[to], f = "", h = curPage * pageSize; h < (curPage + 1) * pageSize && h < e.length; h++)
+                            f = appendMsg(e[h].from, e[h].to, e[h].message, e[h].type, e[h].id, !0, e[h].status) + f;
+                        $message_wrapper.prepend(f),
+                        curPage++;
+                        curPage * pageSize >= e.length && isBind && $(window).off("scroll.ch");
+                        var i = $("body").height() - lastBodyHeight;
+                        lastBodyHeight = $("body").height(),
+                        $(window).scrollTop(i)
+                    }
+                } else {
+                    $(window).off("scroll.ch");
+                }
+                lock = !1
+            }
+
+            if (good && good['title'] !== '') {
+                var messageObj = buildMessageObj(toJid, fromJid, 'good', guid(), 'success', good);
+
+                appendMsg(toJid, fromJid, messageObj, 'good', messageObj['id']);
+                // saveMessage(fromJid, toJid, messageObj);
+            }
+
+            // 打开表情选择器
+            $('#btn_emo_keyboard').on('click', function() {
+                $(this).hasClass("emo") ? ($(this).removeClass("emo").addClass("keyboard"), $("#text_input").blur(), $("#list_emoji_wrap").addClass("on")) : ($(this).removeClass("keyboard").addClass("emo"), $("#list_emoji_wrap").removeClass("on"), $("#text_input").focus())
+            });
+
+            // 点击表情将表情赋值给输入框
+            $("#list_emoji").find("img").on("click", function() {
+                var a = $("#text_input").val();
+                if ("delBtn" == $(this).data("emoji")) {
+                    a = ("]" === a[a.length - 1]) ? a.substring(0, a.lastIndexOf("[")) : a.substring(0, a.length - 1);
+                    $("#text_input").val(a);
+                } else {
+                    var b = $(this).data("emoji");
+                    $("#text_input").val(a + b);
+                }
+            });
+
+            $("#add_photo").on("change", function() {
+                function imageUloaderCallback(a) {
+                    var b = a.base64, 
+                        c = (a.filename, (new Date).getTime()), 
+                        d = {
+                            'url': 'imgs/loading.png', 
+                            'picId': c,
+                        };
+                    // 增加消息到消息体里 function appendMsg(from, to, message, type, id, f, h) {
+                    
+                    appendMsg(fromJid, toJid, d, 'image', guid());
+                    // l.appendMsg(l.username, l.hisId, d, "image", "pic-loading"),
+                    $.ajax({
+                        type: "POST",
+                        url: Config['image_upload_url'] + '&t=' + (new Date).getTime(),
+                        data: {
+                            'image' : b
+                        },
+                        async: !0,
+                        success: function(a) {
+                            // 删除 loading 状态
+                            $('[data-picId="' + c + '"]').closest("div.message-wrap").remove();
+                            sendMessage(
+                                fromJid, 
+                                toJid, 
+                                'http://oss.aliyuncs.com/vd-shop-img/online/vd/chatimage/27/20150917/20150917173438_346.jpeg', 
+                                'image', 
+                                guid());
+                        },
+                        dataType: "json"
+                    })
+                }
+
+                var a = this.files && this.files[0]
+                  , b = $(this).val()
+                  , c = b.split("\\")
+                  , d = c[c.length - 1];
+                new ImageUploader({
+                    file: a,
+                    width: 320,
+                    noBlur: !0,
+                    filename: d || "unknow.png",
+                    callback: imageUloaderCallback
+                });
+            });
+
+            $("#btn_send_text").on("click", function() {
+                var a = $("#text_input").val();
+                if (a) {
+                    lastConnectionRequestId = (connection.rid || connection._proto.rid);
+                    if (!lastConnectionRequestId) {
+                        alert('连接已断开，刷新页面！');
+                        return;
+                    }
+                    sendMessage(fromJid, toJid, a, 'text', lastConnectionRequestId, false, 'success');
+                    $("#text_input").val('');
+                }
+            })
+
+            $("#btn_send_link").on("click", function() {
+                lastConnectionRequestId = (connection.rid || connection._proto.rid);
+                if (!lastConnectionRequestId) {
+                    alert('连接已断开，刷新页面！');
+                    return;
+                }
+                var messageTxt = [];
+                messageTxt.push('商品名称：' + good.title);
+                messageTxt.push('商品价格：' + good.price);
+                messageTxt.push('商品链接：' + good.link);
+
+                $("#text_input").val(messageTxt.join('  '));
+            });
+
+
+        })();
+
+        $(window).bind("beforeunload", function() { 
+            console.log('window beforeunload');
+        })
+    </script>
+</body>
+</html>
